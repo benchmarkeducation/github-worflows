@@ -1,0 +1,60 @@
+name: Get Environment Variables
+on:
+  workflow_call:
+    inputs:
+      generateDistributionKey:
+        description: Determine whether to generate a distribution key
+        type: boolean
+        default: false
+        required: false
+    outputs:
+      environment:
+        description: The environment this deployment is for based on the target branch. Returns false if doesnt match
+        value: ${{jobs.determine-variables.outputs.environment}}
+      branch:
+        description: The target deployment branch. Returns false if doesnt match
+        value: ${{jobs.determine-variables.outputs.branch}}
+      distributionIdKey:
+        description: The key in the secrets for the AWS distribution Id for the correct environment
+        value: ${{jobs.determine-variables.outputs.distributionIdKey}}
+
+jobs:
+  determine-variables:
+    runs-on: ubuntu-latest
+    outputs:
+      environment: ${{steps.environment.outputs.value}}
+      branch: ${{steps.environment.outputs.value2}}
+      distributionIdKey: ${{steps.cloudfront-distribution-id-key.outputs.value}}
+    steps:
+      - name: Determine environment
+        id: environment
+        run: |
+          ENVIRONMENT=false
+          BRANCH=false
+
+          if grep -q "develop" <<< "${{ github.base_ref }}"; then
+            ENVIRONMENT=qa
+            BRANCH="${{ github.base_ref }}"
+          elif grep -q "/release/" <<< "${{ github.base_ref }}"; then
+            ENVIRONMENT=staging
+            BRANCH="${{ github.base_ref }}"
+          elif grep -q "release" <<< "${{ github.event_name }}" && grep -q "tags/v" <<< "${{ github.ref }}"; then
+            ENVIRONMENT=production
+            BRANCH=($(echo "${{ github.ref }}" | tr -d "refs/tags/"))
+          fi
+
+          echo "::set-output name=value::$ENVIRONMENT"
+          echo "::set-output name=value2::$BRANCH"
+      - name: Determine Cloudfront Distribution ID Key
+        id: cloudfront-distribution-id-key
+        if: ${{ inputs.generateDistributionKey }}
+        run: |
+          DISTRIBUTION_ID_KEY=false
+          if grep -q "develop" <<< "${{ github.base_ref }}"; then
+            DISTRIBUTION_ID_KEY=CLOUDFRONT_DISTRIBUTION_ID_QA
+          elif grep -q "release/" <<< "${{ github.base_ref }}"; then
+            DISTRIBUTION_ID_KEY=CLOUDFRONT_DISTRIBUTION_ID_STAGING
+          elif grep -q "master" <<< "${{ github.base_ref }}"; then
+            DISTRIBUTION_ID_KEY=CLOUDFRONT_DISTRIBUTION_ID_PRODUCTION
+          fi
+          echo "::set-output name=value::$DISTRIBUTION_ID_KEY"
