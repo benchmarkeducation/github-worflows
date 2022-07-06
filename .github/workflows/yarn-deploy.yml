@@ -2,9 +2,18 @@ name: yarn deploy
 on:
   workflow_call:
     inputs:
+#       AWS_ACCESS_KEY_ID:
+#         required: true       
+#         type: string
+#       AWS_SECRET_ACCESS_KEY:
+#         required: true       
+#         type: string
+#       AWS_REGION:
+#         required: true       
+#         type: string
       DISTRIBUTION_ID_KEY:
         required: true
-        type: string      
+        type: string     
       environment:
         required: true
         type: string
