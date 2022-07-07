@@ -24,8 +24,7 @@ jobs:
     defaults:
       run:
         working-directory: ${{ inputs.workingDirectory }}
-    steps:
-      - run: yarn gulp prepare
+    steps:      
       - name: Build Application
         id: build
         run: yarn build
