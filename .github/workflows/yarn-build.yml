@@ -1,4 +1,4 @@
-name: Frontend Build and Possibly deploy
+name: yarn-build
 on:
   workflow_call:
     inputs:
@@ -19,7 +19,7 @@ on:
         required: true
 
 jobs:
-  yarn-build-and-deploy:
+  yarn-build:
     runs-on: ubuntu-latest
     defaults:
       run:
