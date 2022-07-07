@@ -1,4 +1,4 @@
-name: yarn deploy
+name: yarn-deploy
 on:
   workflow_call:
     inputs:
