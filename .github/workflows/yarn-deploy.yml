@@ -2,15 +2,6 @@ name: yarn deploy
 on:
   workflow_call:
     inputs:
-#       AWS_ACCESS_KEY_ID:
-#         required: true       
-#         type: string
-#       AWS_SECRET_ACCESS_KEY:
-#         required: true       
-#         type: string
-#       AWS_REGION:
-#         required: true       
-#         type: string
       DISTRIBUTION_ID_KEY:
         required: true
         type: string     
@@ -48,20 +39,13 @@ jobs:
     defaults:
       run:
         working-directory: ${{ inputs.workingDirectory }}
-    steps:
-      - name: Echo
-        run: echo ${{ secrets.AWS_REGION }}  "${{ secrets.AWS_REGION }}"
-      - name: Echo
-        run: echo ${{ secrets.AWS_REGION }}  "aws region"
-      - name: Echo AWS_ACCESS_KEY_ID
-        run: echo ${{ secrets.AWS_ACCESS_KEY_ID }}  "aws access key"
+    steps:      
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}     
-     
+          aws-region: ${{ secrets.AWS_REGION }}    
       - name: Deploy Remote Entry with no caching headers
         id: deploy1
         if: ${{ inputs.environment != false && (github.event.pull_request.merged == true || inputs.environment == 'production') }}
