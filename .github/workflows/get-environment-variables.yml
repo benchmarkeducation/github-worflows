@@ -26,7 +26,6 @@ jobs:
       branch: ${{steps.environment.outputs.value2}}
       distributionIdKey: ${{steps.cloudfront-distribution-id-key.outputs.value}}
     steps:
-      - run: echo ${{ github.base_ref }} branch
       - name: Determine environment
         id: environment
         run: |
