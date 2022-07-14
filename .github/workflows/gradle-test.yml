@@ -1,4 +1,4 @@
-name: Gradle Build and Possibly Elastic Beanstalk deploy
+name: Gradle Test
 on:
   workflow_call:
     inputs:
@@ -16,7 +16,7 @@ on:
         type: string
 
 jobs:
-  gradle-build-and-deploy:
+  gradle-test:
     runs-on: ubuntu-latest
     defaults:
       run:
