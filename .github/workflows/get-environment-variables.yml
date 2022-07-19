@@ -35,7 +35,7 @@ jobs:
           if grep -q "develop" <<< "${{ github.base_ref }}"; then
             ENVIRONMENT=qa
             BRANCH="${{ github.base_ref }}"
-          elif grep -q "/release/" <<< "${{ github.base_ref }}"; then
+          elif grep -q "release/" <<< "${{ github.base_ref }}"; then
             ENVIRONMENT=staging
             BRANCH="${{ github.base_ref }}"
           elif grep -q "release" <<< "${{ github.event_name }}" && grep -q "tags/v" <<< "${{ github.ref }}"; then
