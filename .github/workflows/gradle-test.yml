@@ -33,12 +33,12 @@ jobs:
         uses: gradle/gradle-build-action@v2
       - name: Run Test
         run: ./gradlew test jacocoTestReport jacocoTestCoverageVerification
-      - name: Send Teams notification for failed test
-        uses: skitionek/notify-microsoft-teams@master
-        if: ${{ failure() }}
-        with:
-          webhook_url: ${{ secrets.MSTEAMS_WEBHOOK }}
-          raw: >-
-            {
-              "text": "FAILED: Deployment to ${{ inputs.environment }} for ${{ github.repository }} ${{ inputs.branch }} branch failed due to broken test. Test need to be fixed."
-            }
+#       - name: Send Teams notification for failed test
+#         uses: skitionek/notify-microsoft-teams@master
+#         if: ${{ failure() }}
+#         with:
+#           webhook_url: ${{ secrets.MSTEAMS_WEBHOOK }}
+#           raw: >-
+#             {
+#               "text": "FAILED: Deployment to ${{ inputs.environment }} for ${{ github.repository }} ${{ inputs.branch }} branch failed due to broken test. Test need to be fixed."
+#             }
