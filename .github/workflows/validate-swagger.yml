@@ -33,11 +33,11 @@ jobs:
 #         uses: gradle/gradle-build-action@v2
 #       - name: Run Test
 #         run: ./gradlew test
-        - name: Validate Swagger cli
-          uses: mpetrunic/swagger-cli-action@v1.0.0
-          with:
+      - name: Validate Swagger cli
+        uses: mpetrunic/swagger-cli-action@v1.0.0
+        with:
             command: "validate examples/swagger.yaml"
-        - swagger-cli validate --no-schema docs/swagger.yml
+      - run:  swagger-cli validate --no-schema docs/swagger.yml
 #         - name: Send Teams notification for Invalid Swagger Documentation
 #           uses: skitionek/notify-microsoft-teams@master
 #           if: ${{ failure() }}
