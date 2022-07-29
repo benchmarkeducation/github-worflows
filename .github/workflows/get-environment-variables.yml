@@ -38,7 +38,7 @@ jobs:
           elif grep -q "pull_request" <<< "${{ github.event_name }}" && grep -q "release/" <<< "${{ github.base_ref }}"; then
             ENVIRONMENT=staging
             BRANCH="${{ github.base_ref }}"
-          elif grep -q "create" <<< "${{ github.event_name }}" && grep -q "release/" <<< "${{ github.ref }}"; then
+          elif grep -q "push" <<< "${{ github.event_name }}" && grep -q "release/" <<< "${{ github.ref }}"; then
             ENVIRONMENT=staging
             BRANCH=($(echo "${{ github.ref }}" | tr -d "refs/heads/"))
           elif grep -q "release" <<< "${{ github.event_name }}" && grep -q "tags/v" <<< "${{ github.ref }}"; then
