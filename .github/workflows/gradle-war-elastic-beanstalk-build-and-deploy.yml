@@ -1,4 +1,4 @@
-name: Gradle Test
+name: Gradle Build and Possibly Elastic Beanstalk deploy
 on:
   workflow_call:
     inputs:
@@ -23,18 +23,12 @@ on:
         type: string
 
 jobs:
-  gradle-test:
+  gradle-build-and-deploy:
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: ${{ inputs.workingDirectory }}
     steps:
-      - name: Set up Python 3 (needed for eb cli)
-        if: ${{ inputs.environment != false && (github.event.pull_request.merged == true || inputs.environment == 'production') }}
-        uses: actions/setup-python@v4
-        with:
-          python-version: "3.*"
-          cache: 'pip'
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -43,6 +37,11 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
       - name: Check out repository code
         uses: actions/checkout@v3
+      - name: Set up Python 3 (needed for eb cli)
+        if: ${{ inputs.environment != false && (github.event.pull_request.merged == true || inputs.environment == 'production') }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.*"
       - name: Setup Java
         uses: actions/setup-java@v3
         with:
@@ -91,7 +90,7 @@ jobs:
             {
               "text": "FAILED: Deployment to ${{ inputs.environment }} for ${{ github.repository }} ${{ inputs.branch }} branch failed during the deployment phase. See workflow for more information"
             }
-      - name: Send Teams notification for failed build
+      - name: Send Teams notification for successful deployment
         uses: skitionek/notify-microsoft-teams@master
         if: ${{ success() && github.event.pull_request.merged == true }}
         with:
