@@ -20,11 +20,7 @@ on:
       files:
         required: false  
         default: 'none'
-        type: string
-      sshPrivateKey:
-         required: false
-         type: string
-       
+        type: string      
 
 jobs:
   yarn-test:
@@ -43,7 +39,7 @@ jobs:
       - if: ${{ inputs.environment == 'qa' && inputs.files != 'none' }} 
         uses: webfactory/ssh-agent@v0.4.1
         with:
-          ssh-private-key: ${{ secrets.sshPrivateKey }}   
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}   
       - if: ${{ inputs.environment == 'qa' && inputs.files != 'none' }} 
         name: Pull develop branch of required repositories
         run: for f in ${{ inputs.files }}; do [yarn add github:benchmarkeducation/${{ f }}#develop]; done  
