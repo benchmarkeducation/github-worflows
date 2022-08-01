@@ -36,13 +36,15 @@ jobs:
         with:
           cache: 'yarn'
           cache-dependency-path: ${{ inputs.packageJsonPath }}
+      - run: echo "env" ${{ inputs.environment }} 
+      - run: echo "files" ${{ inputs.files }} 
       - if: ${{ inputs.environment == 'qa' && inputs.files != 'none' }} 
         uses: webfactory/ssh-agent@v0.4.1
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}   
       - if: ${{ inputs.environment == 'qa' && inputs.files != 'none' }} 
         name: Pull develop branch of required repositories
-        run: for f in ${{ inputs.files }}; do [yarn add github:benchmarkeducation/$f }}#develop]; done  
+        run: for f in ${{ inputs.files }}; do [yarn add github:benchmarkeducation/$f#develop]; done  
 #         run: yarn add github:benchmarkeducation/shared-frontend-logic#develop github:benchmarkeducation/socrates#develop
       - name: Install dependencies
         run: yarn install --immutable
