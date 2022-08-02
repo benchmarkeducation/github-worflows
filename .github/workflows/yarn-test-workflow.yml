@@ -42,7 +42,7 @@ jobs:
       - if: ${{ inputs.environment == 'qa' && inputs.files != 'none' }} 
         uses: webfactory/ssh-agent@v0.4.1
         with:
-          ssh-private-key: ${{ secrets.SCRATCH_USER_ACCESS_TOKEN }} 
+          ssh-private-key: ${{ secrets.SCRATCH_USER_ACCESS_TOKEN }}
       - uses: browniebroke/yarn-upgrade-action@v1
       - if: ${{ inputs.environment == 'qa' && inputs.files != 'none' }} 
         name: Pull develop branch of required repositories
@@ -52,7 +52,7 @@ jobs:
         run: yarn install --immutable
       - name: Run test
         id: test
-        run: yarn test
+        run: yarn test --runInBand --coverage
 #       - name: Send Teams Notification notification for failed test
 #         uses: skitionek/notify-microsoft-teams@master
 #         if: ${{ failure() && steps.test.conclusion == 'failure' }}
