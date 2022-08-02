@@ -46,7 +46,7 @@ jobs:
       - if: ${{ inputs.environment == 'qa' && inputs.files != 'none' }} 
         uses: webfactory/ssh-agent@v0.4.1
         with:
-          ssh-private-key: ${{ inputs.sshPrivateKey }}
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
       - uses: browniebroke/yarn-upgrade-action@v1
       - if: ${{ inputs.environment == 'qa' && inputs.files != 'none' }} 
         name: Pull develop branch of required repositories
