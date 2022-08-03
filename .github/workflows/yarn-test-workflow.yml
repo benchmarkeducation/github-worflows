@@ -46,7 +46,7 @@ jobs:
           cache-dependency-path: ${{ inputs.packageJsonPath }}
           node-version: ${{ inputs.nodeVersion }}     
       - name: Token for the required repositories
-      - if: ${{ inputs.environment == 'qa' && inputs.files != 'none' }} 
+        if: ${{ inputs.environment == 'qa' && inputs.files != 'none' }} 
         uses: webfactory/ssh-agent@v0.4.1
         with:
           ssh-private-key: ${{ secrets.SCRATCH_USER_ACCESS_TOKEN }}
