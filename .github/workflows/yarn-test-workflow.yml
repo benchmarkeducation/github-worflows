@@ -57,7 +57,7 @@ jobs:
         run: yarn install --immutable
       - name: Run test
         id: test
-        run: yarn test --runInBand --coverage
+        run: yarn test 
       - name: Send Teams Notification notification for failed test
         uses: skitionek/notify-microsoft-teams@master
         if: ${{ failure() && steps.test.conclusion == 'failure' }}
