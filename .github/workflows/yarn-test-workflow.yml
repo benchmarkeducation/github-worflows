@@ -20,11 +20,7 @@ on:
       files:
         required: false
         default: 'none'
-        type: string   
-      sshPrivateKey:
-        required: false
-        default: 'none'
-        type: string  
+        type: string      
       nodeVersion:
         required: false
         default: '14.19'
@@ -49,12 +45,13 @@ jobs:
           cache: 'yarn'
           cache-dependency-path: ${{ inputs.packageJsonPath }}
           node-version: ${{ inputs.nodeVersion }}     
+      - name: Token for the required repositories
       - if: ${{ inputs.environment == 'qa' && inputs.files != 'none' }} 
         uses: webfactory/ssh-agent@v0.4.1
         with:
           ssh-private-key: ${{ secrets.SCRATCH_USER_ACCESS_TOKEN }}
       - if: ${{ inputs.environment == 'qa' && inputs.files != 'none' }} 
-        name: Pull develop branch of required repositories
+        name: Pull required repositories
         run: for f in ${{ inputs.files }}; do yarn add github:benchmarkeducation/$f#develop ; done
       - name: Install dependencies
         run: yarn install --immutable
