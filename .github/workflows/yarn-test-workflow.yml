@@ -28,7 +28,11 @@ on:
       nodeVersion:
         required: false
         default: '14.19'
-        type: string  
+        type: string 
+      testConditions:
+        required: false
+        default: ''
+        type: string 
 
 jobs:
   yarn-test:
@@ -56,7 +60,7 @@ jobs:
         run: yarn install --immutable
       - name: Run test
         id: test
-        run: yarn test 
+        run: yarn test ${{ inputs.testConditions }}
       - name: Send Teams Notification notification for failed test
         uses: skitionek/notify-microsoft-teams@master
         if: ${{ failure() && steps.test.conclusion == 'failure' }}
