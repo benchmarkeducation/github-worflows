@@ -47,7 +47,7 @@ jobs:
         uses: webfactory/ssh-agent@v0.4.1
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-      - uses: browniebroke/yarn-upgrade-action@v1
+#       - uses: browniebroke/yarn-upgrade-action@v1
       - if: ${{ inputs.environment == 'qa' && inputs.files != 'none' }} 
         name: Pull develop branch of required repositories
         run: for f in ${{ inputs.files }}; do yarn add github:benchmarkeducation/$f#develop ; done  
