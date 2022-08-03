@@ -40,7 +40,7 @@ jobs:
         with:
           cache: 'yarn'
           cache-dependency-path: ${{ inputs.packageJsonPath }}
-     
+          node-version: '14.19'
       - run: echo "env" ${{ inputs.environment }} 
       - run: echo "files" ${{ inputs.files }} 
       - if: ${{ inputs.environment == 'qa' && inputs.files != 'none' }} 
