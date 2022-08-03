@@ -27,11 +27,11 @@ on:
         default: ${{ github.ref }}
         type: string
       files:
-        required: false  
+        required: false
         default: 'none'
         type: string      
       nodeVersion:
-        required: false  
+        required: false
         default: '14.19'
         type: string    
 
