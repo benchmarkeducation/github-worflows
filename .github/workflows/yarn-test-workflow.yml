@@ -25,6 +25,10 @@ on:
         required: false  
         default: 'none'
         type: string  
+      nodeVersion:
+        required: false  
+        default: '14.19'
+        type: string  
 
 jobs:
   yarn-test:
@@ -40,23 +44,21 @@ jobs:
         with:
           cache: 'yarn'
           cache-dependency-path: ${{ inputs.packageJsonPath }}
-          node-version: '14.19'
+          node-version: ${{ inputs.nodeVersion }}
       - run: echo "env" ${{ inputs.environment }} 
       - run: echo "files" ${{ inputs.files }} 
       - if: ${{ inputs.environment == 'qa' && inputs.files != 'none' }} 
         uses: webfactory/ssh-agent@v0.4.1
         with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-#       - uses: browniebroke/yarn-upgrade-action@v1
+          ssh-private-key: ${{ secrets.SCRATCH_USER_ACCESS_TOKEN }}
       - if: ${{ inputs.environment == 'qa' && inputs.files != 'none' }} 
         name: Pull develop branch of required repositories
-        run: for f in ${{ inputs.files }}; do yarn add github:benchmarkeducation/$f#develop ; done  
-#         run: yarn add github:benchmarkeducation/shared-frontend-logic#develop github:benchmarkeducation/socrates#develop
+        run: for f in ${{ inputs.files }}; do yarn add github:benchmarkeducation/$f#develop ; done
       - name: Install dependencies
         run: yarn install --immutable
       - name: Run test
         id: test
-        run: yarn test --runInBand --coverage
+        run: yarn test 
 #       - name: Send Teams Notification notification for failed test
 #         uses: skitionek/notify-microsoft-teams@master
 #         if: ${{ failure() && steps.test.conclusion == 'failure' }}
