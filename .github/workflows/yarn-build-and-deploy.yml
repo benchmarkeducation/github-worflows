@@ -29,11 +29,7 @@ on:
       files:
         required: false  
         default: 'none'
-        type: string   
-      sshPrivateKey:
-        required: false  
-        default: 'none'
-        type: string  
+        type: string      
       nodeVersion:
         required: false  
         default: '14.19'
