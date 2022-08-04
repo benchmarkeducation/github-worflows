@@ -1,0 +1,31 @@
+name: Validate Swagger
+on:
+  workflow_call:
+    inputs:
+      workingDirectory:
+        required: false
+        default: '.'
+        type: string
+      swaggerFile:
+        required: false
+        default: 'coverage'
+        type: string
+
+jobs:
+  phpunit-test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ inputs.workingDirectory }}
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+        with:
+          persist-credentials: false
+      - name: Setup Node
+        uses: actions/setup-node@v3
+      - name: Validate Swagger
+        run: |
+          export PATH=$PATH:$HOME/.yarn/bin
+          yarn global add swagger-cli
+          swagger-cli validate --no-schema ${{ inputs.swaggerFile }}
