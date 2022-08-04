@@ -21,7 +21,7 @@ on:
         type: string
 
 jobs:
-  phpunit-test:
+  php-elasticbeanstalk-build-and-deploy:
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -69,7 +69,7 @@ jobs:
             {
               "text": "FAILED: Deployment to ${{ inputs.environment }} for ${{ github.repository }} ${{ inputs.branch }} branch failed due to build failure. Build needs to be fixed."
             }
-      - name: Deploy war file to Elastic Beanstalk
+      - name: Deploy to Elastic Beanstalk
         id: deploy1
         if: ${{ inputs.environment != false && (github.event.pull_request.merged == true || inputs.environment == 'production') }}
         run: |

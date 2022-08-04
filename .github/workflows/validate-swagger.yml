@@ -19,7 +19,7 @@ on:
         type: string
 
 jobs:
-  phpunit-test:
+  validate-swagger:
     runs-on: ubuntu-latest
     defaults:
       run:

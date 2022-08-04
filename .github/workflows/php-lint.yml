@@ -26,7 +26,7 @@ on:
         type: string
 
 jobs:
-  phpunit-test:
+  php-lint:
     runs-on: ubuntu-latest
     defaults:
       run:
