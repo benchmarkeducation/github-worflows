@@ -54,7 +54,7 @@ jobs:
         run: composer install
       - name: Run lint
         id: lint
-        run: ./vendor/bin/phpcs --standard=${{ inputs.lintStandard }} ${{ inputs.lintDirectories }}
+        run: ./vendor/bin/phpcs -n --standard=${{ inputs.lintStandard }} ${{ inputs.lintDirectories }}
       - name: Send Teams Notification notification for failed test
         uses: skitionek/notify-microsoft-teams@master
         if: ${{ failure() && steps.lint.conclusion == 'failure' }}
