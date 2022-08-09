@@ -29,11 +29,11 @@ on:
       files:
         required: false
         default: 'none'
-        type: string      
+        type: string
       nodeVersion:
         required: false
         default: '14.19'
-        type: string    
+        type: string
 
 
 jobs:
@@ -57,7 +57,7 @@ jobs:
           cache: 'yarn'
           cache-dependency-path: ${{ inputs.packageJsonPath }}
           node-version: ${{ inputs.nodeVersion }}
-      - if: ${{ inputs.environment == 'qa' && inputs.files != 'none' }} 
+      - if: ${{ inputs.environment == 'qa' && inputs.files != 'none' }}
         uses: webfactory/ssh-agent@v0.4.1
         with:
           ssh-private-key: ${{ secrets.SCRATCH_USER_ACCESS_TOKEN }}
@@ -65,9 +65,9 @@ jobs:
         run: yarn cache clean
       - name: Install dependencies
         run: yarn install --immutable
-      - if: ${{ inputs.environment == 'qa' && inputs.files != 'none' }} 
+      - if: ${{ inputs.environment == 'qa' && inputs.files != 'none' }}
         name: Pull develop branch of required repositories
-        run: for f in ${{ inputs.files }}; do yarn add github:benchmarkeducation/$f#develop ; done     
+        run: for f in ${{ inputs.files }}; do yarn add github:benchmarkeducation/$f#develop ; done
       - name: Copy correct .env file
         run: cp .env.${{ inputs.environment }} .env
       - name: Build Application
@@ -89,7 +89,7 @@ jobs:
       - name: Deploy rest of files
         id: deploy2
         if: ${{ inputs.environment != false && (github.event.pull_request.merged == true || inputs.environment == 'production') }}
-        run: aws s3 sync ${{ inputs.directoryToDeploy }} s3://bu-static-sites/${{ inputs.environment }}/${{ inputs.directoryToDeployTo }} --delete --exact-timestamps --include "*" --exclude "remoteEntry.js"
+        run: aws s3 sync ${{ inputs.directoryToDeploy }} s3://bu-static-sites/${{ inputs.environment }}/${{ inputs.directoryToDeployTo }} --delete --exact-timestamps --cache-control max-age-43200 --include "*" --exclude "remoteEntry.js"
       - name: Invalidate Cloudfront cache
         id: deploy3
         if: ${{ inputs.environment != false && (github.event.pull_request.merged == true || inputs.environment == 'production') }}
