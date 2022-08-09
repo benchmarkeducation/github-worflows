@@ -61,12 +61,13 @@ jobs:
         uses: webfactory/ssh-agent@v0.4.1
         with:
           ssh-private-key: ${{ secrets.SCRATCH_USER_ACCESS_TOKEN }}
-      - if: ${{ inputs.environment == 'qa' && inputs.files != 'none' }} 
-        name: Pull develop branch of required repositories
-        run: for f in ${{ inputs.files }}; do yarn add github:benchmarkeducation/$f#develop ; done      
-      - run: yarn cache clean
+      - name: Clean cache
+        run: yarn cache clean
       - name: Install dependencies
         run: yarn install --immutable
+      - if: ${{ inputs.environment == 'qa' && inputs.files != 'none' }} 
+        name: Pull develop branch of required repositories
+        run: for f in ${{ inputs.files }}; do yarn add github:benchmarkeducation/$f#develop ; done     
       - name: Copy correct .env file
         run: cp .env.${{ inputs.environment }} .env
       - name: Build Application
