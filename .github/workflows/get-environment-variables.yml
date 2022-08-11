@@ -45,6 +45,8 @@ jobs:
             ENVIRONMENT=production
             BRANCH=($(echo "${{ github.ref }}" | tr -d "refs/tags/"))
           fi
+          echo $ENVIRONMENT
+          echo $BRANCH
 
           echo "::set-output name=value::$ENVIRONMENT"
           echo "::set-output name=value2::$BRANCH"

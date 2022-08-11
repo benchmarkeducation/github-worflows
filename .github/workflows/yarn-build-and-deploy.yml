@@ -32,7 +32,7 @@ on:
         type: string
       nodeVersion:
         required: false
-        default: '14.19'
+        default: '16'
         type: string
 
 
