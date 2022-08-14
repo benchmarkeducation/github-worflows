@@ -23,6 +23,14 @@ on:
         type: string
         default: 'yes'
         required: false
+      downgradeComposer:
+        type: string
+        default: 'no'
+        required: false
+      removeMemoryLimit:
+        type: string
+        default: 'no'
+        required: false
 
 jobs:
   php-elasticbeanstalk-build-and-deploy:
