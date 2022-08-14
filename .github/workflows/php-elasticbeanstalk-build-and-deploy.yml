@@ -24,12 +24,12 @@ on:
         default: false
         required: false
       downgradeComposer:
-        type: string
-        default: 'no'
+        type: boolean
+        default: false
         required: false
       removeMemoryLimit:
-        type: string
-        default: 'no'
+        type: boolean
+        default: false
         required: false
 
 jobs:
