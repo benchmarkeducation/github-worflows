@@ -55,7 +55,7 @@ jobs:
         id: composer-cache
         run: echo "::set-output name=dir::$(composer config cache-files-dir)"
       - name: Cache Composer dependencies
-        if: ${{ inputs.environment != false && (github.event.pull_request.merged == true || inputs.environment == 'production') }}
+        if: ${{ inputs.environment != false && (github.event.pull_request.merged == true || inputs.environment == 'qa') }}
         uses: actions/cache@v3
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
@@ -78,7 +78,7 @@ jobs:
             }
       - name: Deploy to Elastic Beanstalk
         id: deploy1
-        if: ${{ inputs.environment != false && (github.event.pull_request.merged == true || inputs.environment == 'production') }}
+        if: ${{ inputs.environment != false && (github.event.pull_request.merged == true || inputs.environment == 'qa') }}
         run: |
           echo "Installing Elastic Beanstalk Cli"
           pip install awsebcli --upgrade
@@ -95,7 +95,7 @@ jobs:
           eb deploy --timeout 20 ${{ inputs.elasticBeanstalkApplication }}-${{ inputs.environment }} -l $(printf "%s_%s" "$BRANCH_DETAIL" "$NOW")
       - name: Send Teams notification for failed deployment
         uses: skitionek/notify-microsoft-teams@master
-        if: ${{ failure() && inputs.environment != false && (github.event.pull_request.merged == true || inputs.environment == 'production') && steps.deploy1.conclusion == 'failure' }}
+        if: ${{ failure() && inputs.environment != false && (github.event.pull_request.merged == true || inputs.environment == 'qa') && steps.deploy1.conclusion == 'failure' }}
         with:
           webhook_url: ${{ secrets.MSTEAMS_WEBHOOK }}
           raw: >-
