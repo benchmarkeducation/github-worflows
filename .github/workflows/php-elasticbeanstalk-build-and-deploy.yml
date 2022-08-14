@@ -48,29 +48,29 @@ jobs:
       - name: Check out repository code
         uses: actions/checkout@v3
       - name: Set up Python 3 (needed for eb cli)
-        if: ${{ inputs.environment != false && (github.event.pull_request.merged == true || inputs.environment == 'qa') }}
+        if: ${{ inputs.environment != false && (github.event.pull_request.merged == true || inputs.environment == 'production') }}
         uses: actions/setup-python@v4
         with:
           python-version: "3.*"
       - name: Setup PHP
-        if: ${{ inputs.environment != false && (github.event.pull_request.merged == true || inputs.environment == 'qa') }}
+        if: ${{ inputs.environment != false && (github.event.pull_request.merged == true || inputs.environment == 'production') }}
         uses: shivammathur/setup-php@2.21.1
         with:
           php-version: ${{ inputs.phpVersion }}
           tools: composer:v2
       - name: Get composer cache directory
-        if: ${{ inputs.environment != false && (github.event.pull_request.merged == true || inputs.environment == 'qa') }}
+        if: ${{ inputs.environment != false && (github.event.pull_request.merged == true || inputs.environment == 'production') }}
         id: composer-cache
         run: echo "::set-output name=dir::$(composer config cache-files-dir)"
       - name: Cache Composer dependencies
-        if: ${{ inputs.environment != false && (github.event.pull_request.merged == true || inputs.environment == 'qa') }}
+        if: ${{ inputs.environment != false && (github.event.pull_request.merged == true || inputs.environment == 'production') }}
         uses: actions/cache@v3
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
           key: ${{ runner.os }}-composer-no-dev-${{ hashFiles('**/composer.lock') }}
           restore-keys: ${{ runner.os }}-composer-no-dev-
       - name: Install Composer dependencies
-        if: ${{ inputs.environment != false && (github.event.pull_request.merged == true || inputs.environment == 'qa') }}
+        if: ${{ inputs.environment != false && (github.event.pull_request.merged == true || inputs.environment == 'production') }}
         run: composer install --no-dev
       - name: Pull develop branch of sdk
         if: ${{ inputs.sdkRequired }}
@@ -86,7 +86,7 @@ jobs:
             }
       - name: Deploy to Elastic Beanstalk
         id: deploy1
-        if: ${{ inputs.environment != false && (github.event.pull_request.merged == true || inputs.environment == 'qa') }}
+        if: ${{ inputs.environment != false && (github.event.pull_request.merged == true || inputs.environment == 'production') }}
         run: |
           echo "Installing Elastic Beanstalk Cli"
           pip install awsebcli --upgrade
@@ -103,7 +103,7 @@ jobs:
           eb deploy --timeout 20 ${{ inputs.elasticBeanstalkApplication }}-${{ inputs.environment }} -l $(printf "%s_%s" "$BRANCH_DETAIL" "$NOW")
       - name: Send Teams notification for failed deployment
         uses: skitionek/notify-microsoft-teams@master
-        if: ${{ failure() && inputs.environment != false && (github.event.pull_request.merged == true || inputs.environment == 'qa') && steps.deploy1.conclusion == 'failure' }}
+        if: ${{ failure() && inputs.environment != false && (github.event.pull_request.merged == true || inputs.environment == 'production') && steps.deploy1.conclusion == 'failure' }}
         with:
           webhook_url: ${{ secrets.MSTEAMS_WEBHOOK }}
           raw: >-
