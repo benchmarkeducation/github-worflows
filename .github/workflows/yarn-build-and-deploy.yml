@@ -57,8 +57,7 @@ jobs:
           cache: 'yarn'
           cache-dependency-path: ${{ inputs.packageJsonPath }}
           node-version: ${{ inputs.nodeVersion }}
-      - if: ${{ inputs.environment == 'qa' && inputs.files != 'none' }}
-        uses: webfactory/ssh-agent@v0.4.1
+      - uses: webfactory/ssh-agent@v0.4.1
         with:
           ssh-private-key: ${{ secrets.SCRATCH_USER_ACCESS_TOKEN }}
       - name: Clean cache
