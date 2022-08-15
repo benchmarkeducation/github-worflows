@@ -43,11 +43,12 @@ jobs:
       - name: Setup Java
       - uses: actions/setup-java@v3
         with:
-            distribution: 'temurin'
-            java-version: ${{ inputs.jdkVersion }}
-            cache: 'maven'
+          distribution: 'temurin'
+          java-version: ${{ inputs.jdkVersion }}
+          cache: 'maven'
       - name: Build with Maven
         run: mvn -B package --file pom.xml
+      - run: ./mvnw dependency:go-offline
       - name: Build 
         run: ./mvnw package -DskipTests
 #       - name: Send Teams notification for failed build
@@ -64,8 +65,7 @@ jobs:
         if: ${{ inputs.environment != false && (github.event.pull_request.merged == true || inputs.environment == 'production') }}
         run: |
           echo "Installing Elastic Beanstalk Cli"
-          pip install awsebcli --upgrade
-
+          pip install awsebcli --upgrade          
           NOW=$(date +"%m%d%Y_%H%M")
           BRANCH_DETAIL="${{ inputs.branch }}"
           strarr=($(echo $BRANCH_DETAIL | tr "\/" "\n"))
@@ -74,7 +74,6 @@ jobs:
           then
             BRANCH_DETAIL=${strarr[1]}
           fi
-
           eb deploy --timeout 20 ${{ inputs.elasticBeanstalkApplication }}-${{ inputs.environment }} -l $(printf "%s_%s" "$BRANCH_DETAIL" "$NOW")
 #       - name: Send Teams notification for failed deployment
 #         uses: skitionek/notify-microsoft-teams@master
