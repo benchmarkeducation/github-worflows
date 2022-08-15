@@ -42,7 +42,7 @@ jobs:
           cache: 'yarn'         
       - name: Setup Java
       - uses: actions/setup-java@v3
-          with:
+        with:
             distribution: 'temurin'
             java-version: ${{ inputs.jdkVersion }}
             cache: 'maven'
