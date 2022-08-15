@@ -22,15 +22,7 @@ on:
       sdkRequired:       
         type: boolean
         default: false
-        required: false
-      downgradeComposer:
-        type: boolean
-        default: false
-        required: false
-      removeMemoryLimit:
-        type: boolean
-        default: false
-        required: false
+        required: false     
 
 jobs:
   php-elasticbeanstalk-build-and-deploy:
