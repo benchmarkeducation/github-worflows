@@ -20,9 +20,13 @@ on:
       elasticBeanstalkApplication:
         required: true
         type: string  
+      nodeVersion:
+        required: false
+        type: string 
+        default: '16'
       
 jobs:
-  php-elasticbeanstalk-build-and-deploy:
+  maven-build-and-deploy:
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -39,7 +43,8 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
-          cache: 'yarn'         
+          cache: 'yarn'  
+          node-version:  ${{ inputs.nodeVersion }}
       - name: Setup Java
         uses: actions/setup-java@v3
         with:
