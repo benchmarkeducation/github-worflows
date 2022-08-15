@@ -46,6 +46,9 @@ on:
         required: false 
         default: true
         type: boolean
+      appServerUrl:
+         required: false     
+         type: string
 
 jobs:
   yarn-build-and-deploy:
@@ -84,7 +87,7 @@ jobs:
         run: cp  ${{ inputs.copyFromFile }} ${{ inputs.copyToFile }}
       - name: Execute file value substitution       
         if: ${{ inputs.copyToFile != 'none' }}     
-        run: sed --in-place='' "s#%%appserver_url_path%%#https://appserver-${{ env.environment }}.benchmarkuniverse.com/static/appServer.js#" ${{ inputs.copyToFile }}  
+        run: sed --in-place='' "s#%%appserver_url_path%%#${{appServerUrl}}#" ${{ inputs.copyToFile }}  
       - name: Check file existence
         id: check_files
         uses: andstor/file-existence-action@v1
