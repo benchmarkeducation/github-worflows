@@ -42,9 +42,9 @@ on:
         required: false 
         default: 'none'
         type: string
-      noBuild:
+      build:
         required: false 
-        default: false
+        default: true
         type: boolean
 
 jobs:
@@ -95,7 +95,7 @@ jobs:
         run: cp .env.${{ inputs.environment }} .env     
       - name: Build Application
         id: build
-        if: ${{ inputs.noBuild == false }}
+        if: ${{ inputs.build }}
         run: yarn build
       - name: Send Teams notification for failed build
         uses: skitionek/notify-microsoft-teams@master
@@ -108,15 +108,15 @@ jobs:
             }
       - name: Deploy Remote Entry with no caching headers
         id: deploy1
-        if: ${{ inputs.environment != false && (github.event.pull_request.merged == true || inputs.environment == 'qa') }}
+        if: ${{ inputs.environment != false && (github.event.pull_request.merged == true || inputs.environment == 'production') }}
         run: aws s3 sync ${{ inputs.directoryToDeploy }} s3://bu-static-sites/${{ inputs.environment }}/${{ inputs.directoryToDeployTo }} --delete --exact-timestamps --cache-control no-store,max-age-0 --exclude "*" --include "remoteEntry.js"
       - name: Deploy rest of files
         id: deploy2
-        if: ${{ inputs.environment != false && (github.event.pull_request.merged == true || inputs.environment == 'qa') }}
+        if: ${{ inputs.environment != false && (github.event.pull_request.merged == true || inputs.environment == 'production') }}
         run: aws s3 sync ${{ inputs.directoryToDeploy }} s3://bu-static-sites/${{ inputs.environment }}/${{ inputs.directoryToDeployTo }} --delete --exact-timestamps --cache-control max-age-43200 --include "*" --exclude "remoteEntry.js"
       - name: Invalidate Cloudfront cache
         id: deploy3
-        if: ${{ inputs.environment != false && (github.event.pull_request.merged == true || inputs.environment == 'qa') }}
+        if: ${{ inputs.environment != false && (github.event.pull_request.merged == true || inputs.environment == 'production') }}
         run: aws cloudfront create-invalidation --distribution-id "${{ secrets[inputs.DISTRIBUTION_ID_KEY] }}" --paths "/*"
       - name: Send Teams notification for failed build
         uses: skitionek/notify-microsoft-teams@master
