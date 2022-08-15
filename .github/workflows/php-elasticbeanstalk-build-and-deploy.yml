@@ -97,7 +97,7 @@ jobs:
             }
       - name: Send Teams notification for successful deployment
         uses: skitionek/notify-microsoft-teams@master
-        if: ${{ success() && inputs.environment != false && (github.event.pull_request.merged == true || inputs.environment == 'production' || inputs.environment == 'production' || (inputs.environment == 'staging' && github.event_name == 'push') }}
+        if: ${{ success() && inputs.environment != false && (github.event.pull_request.merged == true || inputs.environment == 'production' || inputs.environment == 'production' || (inputs.environment == 'staging' && github.event_name == 'push')) }}
         with:
           webhook_url: ${{ secrets.MSTEAMS_WEBHOOK }}
           raw: >-
