@@ -79,8 +79,8 @@ jobs:
         if: ${{ inputs.copyFromFile == 'none' && inputs.copyToFile != 'none' }}
         run: cp  ${{ inputs.copyFromFile }} ${{ inputs.copyToFile }}
       - name: execute-file-value-substitution       
-        if: ${{ inputs.copyToFile != 'none' }}
-        run: sed --in-place='' "s#"%%appserver_url_path%%"##https://appserver-${{ env.environment }}.benchmarkuniverse.com/static/appServer.js#" ${{ inputs.copyToFile }}      
+        if: ${{ inputs.copyToFile != 'none' }}     
+        run: sed --in-place='' "s#%%appserver_url_path%%#https://appserver-${{ env.environment }}.benchmarkuniverse.com/static/appServer.js#" ${{ inputs.copyToFile }}  
       - name: Copy correct .env file
         run: cp .env.${{ inputs.environment }} .env
       - name: Build Application
