@@ -55,11 +55,15 @@ jobs:
         if: ${{ inputs.generateDistributionKey }}
         run: |
           DISTRIBUTION_ID_KEY=false
-          if grep -q "develop" <<< "${{ github.base_ref }}"; then
+          
+          if grep -q "pull_request" <<< "${{ github.event_name }}" && grep -q "develop" <<< "${{ github.base_ref }}"; then
             DISTRIBUTION_ID_KEY=CLOUDFRONT_DISTRIBUTION_ID_QA
-          elif grep -q "release/" <<< "${{ github.base_ref }}"; then
+          elif grep -q "pull_request" <<< "${{ github.event_name }}" && grep -q "release/" <<< "${{ github.base_ref }}"; then
             DISTRIBUTION_ID_KEY=CLOUDFRONT_DISTRIBUTION_ID_STAGING
-          elif grep -q "master" <<< "${{ github.base_ref }}"; then
+          elif grep -q "push" <<< "${{ github.event_name }}" && grep -q "release/" <<< "${{ github.ref }}"; then
+            DISTRIBUTION_ID_KEY=CLOUDFRONT_DISTRIBUTION_ID_STAGING
+          elif grep -q "release" <<< "${{ github.event_name }}" && grep -q "tags/v" <<< "${{ github.ref }}"; then
             DISTRIBUTION_ID_KEY=CLOUDFRONT_DISTRIBUTION_ID_PRODUCTION
           fi
+
           echo "::set-output name=value::$DISTRIBUTION_ID_KEY"
