@@ -81,13 +81,7 @@ jobs:
         run: yarn install --immutable
       - if: ${{ inputs.environment == 'qa' && inputs.files != 'none' }}
         name: Pull develop branch of required repositories
-        run: for f in ${{ inputs.files }}; do yarn add github:benchmarkeducation/$f#develop ; done
-      - name: copy file
-        if: ${{ inputs.copyFromFile != 'none' && inputs.copyToFile != 'none' }}
-        run: cp  ${{ inputs.copyFromFile }} ${{ inputs.copyToFile }}
-      - name: Execute file value substitution       
-        if: ${{ inputs.copyToFile != 'none' }}     
-        run: sed --in-place='' "s#%%appserver_url_path%%#${{appServerUrl}}#" ${{ inputs.copyToFile }}  
+        run: for f in ${{ inputs.files }}; do yarn add github:benchmarkeducation/$f#develop ; done     
       - name: Check file existence
         id: check_files
         uses: andstor/file-existence-action@v1
