@@ -41,7 +41,7 @@ jobs:
         with:
           cache: 'yarn'         
       - name: Setup Java
-      - uses: actions/setup-java@v3
+        uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: ${{ inputs.jdkVersion }}
@@ -51,15 +51,6 @@ jobs:
       - run: ./mvnw dependency:go-offline
       - name: Build 
         run: ./mvnw package -DskipTests
-#       - name: Send Teams notification for failed build
-#         uses: skitionek/notify-microsoft-teams@master
-#         if: ${{ failure() && steps.build.conclusion == 'failure' }}
-#         with:
-#           webhook_url: ${{ secrets.MSTEAMS_WEBHOOK }}
-#           raw: >-
-#             {
-#               "text": "FAILED: Deployment to ${{ inputs.environment }} for ${{ github.repository }} ${{ inputs.branch }} branch failed due to build failure. Build needs to be fixed."
-#             }
       - name: Deploy to Elastic Beanstalk
         id: deploy1
         if: ${{ inputs.environment != false && (github.event.pull_request.merged == true || inputs.environment == 'production') }}
@@ -75,21 +66,4 @@ jobs:
             BRANCH_DETAIL=${strarr[1]}
           fi
           eb deploy --timeout 20 ${{ inputs.elasticBeanstalkApplication }}-${{ inputs.environment }} -l $(printf "%s_%s" "$BRANCH_DETAIL" "$NOW")
-#       - name: Send Teams notification for failed deployment
-#         uses: skitionek/notify-microsoft-teams@master
-#         if: ${{ failure() && inputs.environment != false && (github.event.pull_request.merged == true || inputs.environment == 'production') && steps.deploy1.conclusion == 'failure' }}
-#         with:
-#           webhook_url: ${{ secrets.MSTEAMS_WEBHOOK }}
-#           raw: >-
-#             {
-#               "text": "FAILED: Deployment to ${{ inputs.environment }} for ${{ github.repository }} ${{ inputs.branch }} branch failed during the deployment phase. See workflow for more information"
-#             }
-#       - name: Send Teams notification for successful deployment
-#         uses: skitionek/notify-microsoft-teams@master
-#         if: ${{ success() && github.event.pull_request.merged == true }}
-#         with:
-#           webhook_url: ${{ secrets.MSTEAMS_WEBHOOK }}
-#           raw: >-
-#             {
-#               "text": "Deploying ${{ github.repository }} ${{ inputs.branch }} to ${{ inputs.environment }} has completed"
-#             }
+
