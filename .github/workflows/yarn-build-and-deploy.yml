@@ -27,8 +27,7 @@ on:
         default: ${{ github.ref }}
         type: string
       files:
-        required: false
-        default: 'none'
+        required: false        
         type: string
       nodeVersion:
         required: false
@@ -64,9 +63,15 @@ jobs:
         run: yarn cache clean
       - name: Install dependencies
         run: yarn install --immutable
-      - if: ${{ inputs.environment == 'qa' && inputs.files != 'none' }}
+      - if: ${{ inputs.environment == 'qa' && inputs.files != '' }}
         name: Pull develop branch of required repositories
         run: for f in ${{ inputs.files }}; do yarn add github:benchmarkeducation/$f#develop ; done
+      - name: copy file
+        if: ${{ inputs.copyFromFile != '' && inputs.copyToFile != '' }}
+        run: cp  ${{ inputs.copyFromFile }} ${{ inputs.copyToFile }}
+      - name: Replacing  inputs.value-to-replace  in  inputs.file-path 
+        if: ${{ inputs.value-to-replace != '' && inputs.new-value != '' && inputs.file-path != '' }} 
+        run: sed --in-place='' "s#${{ inputs.value-to-replace }}#${{ inputs.new-value }}#" ${{ inputs.file-path }}    
       - name: Copy correct .env file
         run: cp .env.${{ inputs.environment }} .env
       - name: Build Application
