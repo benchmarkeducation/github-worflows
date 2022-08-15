@@ -40,11 +40,11 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
       - name: Check out repository code
         uses: actions/checkout@v3
-      - name: Setup Node
-        uses: actions/setup-node@v3
-        with:
-          cache: 'yarn'  
-          node-version:  ${{ inputs.nodeVersion }}
+#       - name: Setup Node
+#         uses: actions/setup-node@v3
+#         with:
+#           cache: 'yarn'  
+#           node-version:  ${{ inputs.nodeVersion }}
       - name: Setup Java
         uses: actions/setup-java@v3
         with:
