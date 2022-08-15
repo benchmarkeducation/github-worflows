@@ -19,6 +19,10 @@ on:
       elasticBeanstalkApplication:
         required: true
         type: string
+      sdkRequired:       
+        type: boolean
+        default: false
+        required: false   
 
 jobs:
   php-elasticbeanstalk-build-and-deploy:
@@ -60,6 +64,9 @@ jobs:
       - name: Install Composer dependencies
         if: ${{ inputs.environment != false && (github.event.pull_request.merged == true || inputs.environment == 'production' || (inputs.environment == 'staging' && github.event_name == 'push')) }}
         run: composer install --no-dev
+      - name: Pull develop branch of sdk
+        if: ${{ inputs.sdkRequired }}
+        run: composer require benchmarkeducation/sdk:dev-develop
       - name: Send Teams notification for failed build
         uses: skitionek/notify-microsoft-teams@master
         if: ${{ failure() && steps.build.conclusion == 'failure' }}
