@@ -45,7 +45,6 @@ jobs:
             ENVIRONMENT=production
             BRANCH=($(echo "${{ github.ref }}" | tr -d "refs/tags/"))
           fi
-          echo "GITHUB REF: ${{ github.ref }}"
           echo $ENVIRONMENT
           echo $BRANCH
 
@@ -66,5 +65,7 @@ jobs:
           elif grep -q "release" <<< "${{ github.event_name }}" && grep -q "tags/v" <<< "${{ github.ref }}"; then
             DISTRIBUTION_ID_KEY=CLOUDFRONT_DISTRIBUTION_ID_PRODUCTION
           fi
-
+          
+          echo $DISTRIBUTION_ID_KEY
+  
           echo "::set-output name=value::$DISTRIBUTION_ID_KEY"
