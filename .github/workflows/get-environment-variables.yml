@@ -40,10 +40,10 @@ jobs:
             BRANCH="${{ github.base_ref }}"
           elif grep -q "push" <<< "${{ github.event_name }}" && grep -q "release/" <<< "${{ github.ref }}"; then
             ENVIRONMENT=staging
-            BRANCH=($(echo "${{ github.ref }}" | tr -d "refs/heads/"))
+            BRANCH=($(echo "${{ github.ref }}" | cut -c 12-))
           elif grep -q "release" <<< "${{ github.event_name }}" && grep -q "tags/v" <<< "${{ github.ref }}"; then
             ENVIRONMENT=production
-            BRANCH=($(echo "${{ github.ref }}" | tr -d "refs/tags/"))
+            BRANCH=($(echo "${{ github.ref }}" | cut -c 11-))
           fi
           echo $ENVIRONMENT
           echo $BRANCH
