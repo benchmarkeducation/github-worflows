@@ -35,17 +35,22 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
       - name: Check out repository code
         uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+            node-version: '10.23'
+      - uses: borales/actions-yarn@v3.0.0
+        with:
+          cmd: install # will run `yarn install` command
       - name: Setup Java
-          uses: actions/setup-java@v3
-          with:
-            distribution: 'temurin'
+        uses: actions/setup-java@v3
+        with:
+            distribution: 'corretto'
             java-version: 8
             cache: 'maven'
-      - name: Build with Maven
-        run: mvn -B package --file pom.xml
+      - name: dependency
       - run: ./mvnw dependency:go-offline
       - name: Build 
-        run: ./mvnw package -DskipTests     
+        run: ./mvnw package -DskipTests
       - name: Send Teams notification for failed build
         uses: skitionek/notify-microsoft-teams@master
         if: ${{ failure() && steps.build.conclusion == 'failure' }}
