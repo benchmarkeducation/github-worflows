@@ -66,6 +66,7 @@ jobs:
           key: ${{ runner.os }}-composer-no-dev-${{ hashFiles('**/composer.lock') }}
           restore-keys: ${{ runner.os }}-composer-no-dev-
       - name: Install Composer dependencies
+        id: build
         if: ${{ inputs.environment != false && (github.event.pull_request.merged == true || inputs.environment == 'production' || (inputs.environment == 'staging' && github.event_name == 'push')) }}
         run: composer install ${{ inputs.buildArgs }}
       - name: Pull develop branch of sdk
