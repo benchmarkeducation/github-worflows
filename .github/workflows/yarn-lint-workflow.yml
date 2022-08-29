@@ -32,6 +32,12 @@ jobs:
         with:
           cache: 'yarn'
           cache-dependency-path: ${{ inputs.packageJsonPath }}
+      - name: Token for the required repositories
+        uses: webfactory/ssh-agent@v0.4.1
+        with:
+          ssh-private-key: ${{ secrets.SCRATCH_USER_ACCESS_TOKEN }}
+      - name: Clean cache
+        run: yarn cache clean
       - name: Install dependencies
         run: yarn install --immutable
       - name: Run lint
