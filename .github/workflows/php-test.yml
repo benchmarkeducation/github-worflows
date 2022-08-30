@@ -50,7 +50,7 @@ jobs:
       - name: Install Composer dependencies
         run: composer install
       - name: Run test
-        id: lint
+        id: test
         run: ./vendor/bin/phpunit -c phpunit.xml --coverage-html ${{ inputs.coverageDirectories }}
       - name: Send Teams Notification notification for failed test
         uses: skitionek/notify-microsoft-teams@master
