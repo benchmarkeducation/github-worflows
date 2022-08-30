@@ -19,6 +19,10 @@ on:
       elasticBeanstalkApplication:
         required: true
         type: string
+      buildArgs:
+        required: false
+        default: '--no-dev'
+        type: string
 
 jobs:
   php-elasticbeanstalk-build-and-deploy:
@@ -59,7 +63,7 @@ jobs:
           restore-keys: ${{ runner.os }}-composer-no-dev-
       - name: Install Composer dependencies
         if: ${{ inputs.environment != false && (github.event.pull_request.merged == true || inputs.environment == 'production' || (inputs.environment == 'staging' && github.event_name == 'push')) }}
-        run: composer install --no-dev
+        run: composer install ${{ inputs.buildArgs }}
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
@@ -107,7 +111,7 @@ jobs:
             }
       - name: Send Teams notification for successful deployment
         uses: skitionek/notify-microsoft-teams@master
-        if: ${{ success() && inputs.environment != false && (github.event.pull_request.merged == true || inputs.environment == 'production' || (inputs.environment == 'staging' && github.event_name == 'push') }}
+        if: ${{ success() && inputs.environment != false && (github.event.pull_request.merged == true || inputs.environment == 'production' || (inputs.environment == 'staging' && github.event_name == 'push')) }}
         with:
           webhook_url: ${{ secrets.MSTEAMS_WEBHOOK }}
           raw: >-
