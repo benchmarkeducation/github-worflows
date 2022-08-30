@@ -89,8 +89,8 @@ jobs:
         if: ${{ inputs.cache == 'yarn' }}       
         run: yarn install --network-timeout=600000
       - name: Copy correct .env file
-        if: ${{ .env.env-file != '' }}
-        run: cp ${{ .env.env-file }} .env
+        if: ${{ env.env-file != '' }}
+        run: cp ${{ env.env-file }} .env
       - name: yarn production
         if: ${{ inputs.cache == 'yarn' }}   
         id: build1
