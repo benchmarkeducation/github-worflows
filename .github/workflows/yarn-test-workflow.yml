@@ -63,7 +63,7 @@ jobs:
         name: Pull required repositories
         run: for f in ${{ inputs.files }}; do yarn add github:benchmarkeducation/$f#develop ; done
       - name: Install dependencies
-        run: yarn install {{ inputs.installArgs }}
+        run: yarn install ${{ inputs.installArgs }}
       - name: yarn production
         if: ${{ inputs.yarnProduction }}
         run: yarn production 
