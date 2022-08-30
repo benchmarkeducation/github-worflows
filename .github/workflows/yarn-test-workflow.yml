@@ -36,8 +36,12 @@ on:
       yarnProduction:
         required: false
         default: false
-        type: boolean    
-
+        type: boolean  
+      installLibpng:
+        required: false
+        default: false
+        type: boolean  
+     
 jobs:
   yarn-test:
     defaults:
@@ -62,7 +66,9 @@ jobs:
       - if: ${{ inputs.environment == 'qa' && inputs.files != 'none' }} 
         name: Pull required repositories
         run: for f in ${{ inputs.files }}; do yarn add github:benchmarkeducation/$f#develop ; done
-      - run: sudo apt-get install libpng-dev
+      - if: ${{ inputs.installLibpng }}
+        name: Install libpng-dev
+        run: sudo apt-get install libpng-dev
       - name: Install dependencies
         run: yarn install ${{ inputs.installArgs }}
       - name: yarn production
