@@ -23,6 +23,10 @@ on:
         required: false
         default: '--no-dev'
         type: string
+      cache:
+         required: false
+         default: 'npm'
+         type: string
 
 jobs:
   php-elasticbeanstalk-build-and-deploy:
@@ -64,19 +68,38 @@ jobs:
       - name: Install Composer dependencies
         if: ${{ inputs.environment != false && (github.event.pull_request.merged == true || inputs.environment == 'production' || (inputs.environment == 'staging' && github.event_name == 'push')) }}
         run: composer install ${{ inputs.buildArgs }}
-      - name: Setup Node
+      - name: Setup Node with npm
+        if: ${{ inputs.cache == 'npm' }}
         uses: actions/setup-node@v3
         with:
           cache: 'npm'
           cache-dependency-path: ${{ inputs.packageJsonPath }}
+      - name: Setup Node with yarn
+        if: ${{ inputs.cache == 'yarn' }}
+        uses: actions/setup-node@v3
+        with:
+          cache: 'yarn'
+          cache-dependency-path: ${{ inputs.packageJsonPath }}
       - name: Install dependencies
+        if: ${{ inputs.cache == 'npm' }}       
         run: npm install
+      - name: Install dependencies with yarn
+        if: ${{ inputs.cache == 'yarn' }}       
+        run: yarn install --network-timeout=600000
+      - name: Copy correct .env file
+        if: ${{ .env.${{ inputs.environment }} != '' }}
+        run: cp .env.${{ inputs.environment }} .env
+      - name: yarn production
+        if: ${{ inputs.cache == 'yarn' }}   
+        id: build1
+        run: yarn production
       - name: Build Application
-        id: build
+        if: ${{ inputs.cache == 'npm' }} 
+        id: build2
         run: npm run prod
       - name: Send Teams notification for failed build
         uses: skitionek/notify-microsoft-teams@master
-        if: ${{ failure() && steps.build.conclusion == 'failure' }}
+        if: ${{ failure() && (steps.build1.conclusion == 'failure' || steps.build2.conclusion == 'failure') }}
         with:
           webhook_url: ${{ secrets.MSTEAMS_WEBHOOK }}
           raw: >-
