@@ -53,13 +53,15 @@ jobs:
         # if: ${{ inputs.environment != false && (github.event.pull_request.merged == true || inputs.environment == 'production' || (inputs.environment == 'staging' && github.event_name == 'push')) }}
         uses: actions/setup-python@v4
         with:
-          python-version: "3.*"
+#           python-version: "3.*"
+            python-version: '2'
       - name: Setup PHP
         # if: ${{ inputs.environment != false && (github.event.pull_request.merged == true || inputs.environment == 'production' || (inputs.environment == 'staging' && github.event_name == 'push')) }}
         uses: shivammathur/setup-php@2.21.1
         with:
           php-version: ${{ inputs.phpVersion }}
           tools: composer:v2
+          coverage: xdebug
       - name: Get composer cache directory
         # if: ${{ inputs.environment != false && (github.event.pull_request.merged == true || inputs.environment == 'production' || (inputs.environment == 'staging' && github.event_name == 'push')) }}
         id: composer-cache
@@ -71,6 +73,8 @@ jobs:
           path: ${{ steps.composer-cache.outputs.dir }}
           key: ${{ runner.os }}-composer-no-dev-${{ hashFiles('**/composer.lock') }}
           restore-keys: ${{ runner.os }}-composer-no-dev-
+      - name: Clear cache
+        run: composer clearcache 
       - name: Install Composer dependencies
         # if: ${{ inputs.environment != false && (github.event.pull_request.merged == true || inputs.environment == 'production' || (inputs.environment == 'staging' && github.event_name == 'push')) }}
         run: composer install ${{ inputs.buildArgs }}
@@ -92,6 +96,11 @@ jobs:
       - name: Install dependencies
         if: ${{ inputs.cache == 'npm' }}       
         run: npm install
+      - run: |
+            sudo apt-add-repository universe
+            sudo apt update
+            sudo apt install python2-minimal
+            sudo apt install -y libpng-dev
       - name: Install dependencies with yarn
         if: ${{ inputs.cache == 'yarn' }}       
         run: yarn install --network-timeout=600000
