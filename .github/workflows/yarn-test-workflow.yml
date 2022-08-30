@@ -29,6 +29,14 @@ on:
         required: false
         default: ''
         type: string 
+      installArgs:
+        required: false
+        default: '--immutable'
+        type: string    
+      yarnProduction:
+        required: false
+        default: false
+        type: boolean    
 
 jobs:
   yarn-test:
@@ -55,7 +63,10 @@ jobs:
         name: Pull required repositories
         run: for f in ${{ inputs.files }}; do yarn add github:benchmarkeducation/$f#develop ; done
       - name: Install dependencies
-        run: yarn install --immutable
+        run: yarn install {{ inputs.installArgs }}
+      - name: yarn production
+        if: ${{ inputs.yarnProduction }}
+        run: yarn production 
       - name: Run test
         id: test
         run: yarn test  ${{ inputs.testConditions }}
