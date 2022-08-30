@@ -27,6 +27,10 @@ on:
          required: false
          default: 'npm'
          type: string
+      specificCommands:
+        required: false
+        default: ''
+        type: string
 
 jobs:
   php-elasticbeanstalk-build-and-deploy:
@@ -46,30 +50,33 @@ jobs:
       - name: Check out repository code
         uses: actions/checkout@v3
       - name: Set up Python 3 (needed for eb cli)
-        if: ${{ inputs.environment != false && (github.event.pull_request.merged == true || inputs.environment == 'production' || (inputs.environment == 'staging' && github.event_name == 'push')) }}
+        # if: ${{ inputs.environment != false && (github.event.pull_request.merged == true || inputs.environment == 'production' || (inputs.environment == 'staging' && github.event_name == 'push')) }}
         uses: actions/setup-python@v4
         with:
           python-version: "3.*"
       - name: Setup PHP
-        if: ${{ inputs.environment != false && (github.event.pull_request.merged == true || inputs.environment == 'production' || (inputs.environment == 'staging' && github.event_name == 'push')) }}
+        # if: ${{ inputs.environment != false && (github.event.pull_request.merged == true || inputs.environment == 'production' || (inputs.environment == 'staging' && github.event_name == 'push')) }}
         uses: shivammathur/setup-php@2.21.1
         with:
           php-version: ${{ inputs.phpVersion }}
           tools: composer:v2
       - name: Get composer cache directory
-        if: ${{ inputs.environment != false && (github.event.pull_request.merged == true || inputs.environment == 'production' || (inputs.environment == 'staging' && github.event_name == 'push')) }}
+        # if: ${{ inputs.environment != false && (github.event.pull_request.merged == true || inputs.environment == 'production' || (inputs.environment == 'staging' && github.event_name == 'push')) }}
         id: composer-cache
         run: echo "::set-output name=dir::$(composer config cache-files-dir)"
       - name: Cache Composer dependencies
-        if: ${{ inputs.environment != false && (github.event.pull_request.merged == true || inputs.environment == 'production' || (inputs.environment == 'staging' && github.event_name == 'push')) }}
+        # if: ${{ inputs.environment != false && (github.event.pull_request.merged == true || inputs.environment == 'production' || (inputs.environment == 'staging' && github.event_name == 'push')) }}
         uses: actions/cache@v3
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
           key: ${{ runner.os }}-composer-no-dev-${{ hashFiles('**/composer.lock') }}
           restore-keys: ${{ runner.os }}-composer-no-dev-
       - name: Install Composer dependencies
-        if: ${{ inputs.environment != false && (github.event.pull_request.merged == true || inputs.environment == 'production' || (inputs.environment == 'staging' && github.event_name == 'push')) }}
+        # if: ${{ inputs.environment != false && (github.event.pull_request.merged == true || inputs.environment == 'production' || (inputs.environment == 'staging' && github.event_name == 'push')) }}
         run: composer install ${{ inputs.buildArgs }}
+      - name: Repo specific commands
+        if: ${{ inputs.specificCommands != '' }}       
+        run: for f in ${{ inputs.specificCommands }}; do $f ; done
       - name: Setup Node with npm
         if: ${{ inputs.cache == 'npm' }}
         uses: actions/setup-node@v3
