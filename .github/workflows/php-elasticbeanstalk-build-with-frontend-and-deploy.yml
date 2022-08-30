@@ -34,6 +34,8 @@ jobs:
     defaults:
       run:
         working-directory: ${{ inputs.workingDirectory }}
+    env:
+        env-file: .env.${{ inputs.environment }}
     steps:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -87,8 +89,8 @@ jobs:
         if: ${{ inputs.cache == 'yarn' }}       
         run: yarn install --network-timeout=600000
       - name: Copy correct .env file
-        if: ${{ .env.${{ inputs.environment }} != '' }}
-        run: cp .env.${{ inputs.environment }} .env
+        if: ${{ .env.env-file != '' }}
+        run: cp ${{ .env.env-file }} .env
       - name: yarn production
         if: ${{ inputs.cache == 'yarn' }}   
         id: build1
