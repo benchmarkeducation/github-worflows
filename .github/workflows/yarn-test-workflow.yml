@@ -61,8 +61,6 @@ jobs:
         uses: webfactory/ssh-agent@v0.4.1
         with:
           ssh-private-key: ${{ secrets.SCRATCH_USER_ACCESS_TOKEN }}
-#       - name: Clean cache
-#         run: yarn cache clean
       - if: ${{ inputs.environment == 'qa' && inputs.files != 'none' }} 
         name: Pull required repositories
         run: for f in ${{ inputs.files }}; do yarn add github:benchmarkeducation/$f#develop ; done
