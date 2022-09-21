@@ -68,7 +68,7 @@ jobs:
       - name: Install Composer dependencies
         if: ${{ inputs.environment != false && (github.event.pull_request.merged == true || inputs.environment == 'production' || (inputs.environment == 'staging' && github.event_name == 'push')) }}
         run: composer install ${{ inputs.buildArgs }}
-      - name: Pull develop branch of sdk
+      - name: Pull develop branch of sdk --with-all-dependencies
         if: ${{ inputs.sdkRequired }}
         run: composer require benchmarkeducation/sdk:dev-develop
       - name: Send Teams notification for failed build
