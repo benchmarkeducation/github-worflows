@@ -44,33 +44,33 @@ jobs:
       - name: Check out repository code
         uses: actions/checkout@v3
       - name: Set up Python 3 (needed for eb cli)
-        if: ${{ inputs.environment != false && (github.event.pull_request.merged == true || inputs.environment == 'production' || (inputs.environment == 'staging' && github.event_name == 'push')) }}
+        if: ${{ inputs.environment != false && (github.event.pull_request.merged != true || inputs.environment == 'production' || (inputs.environment == 'staging' && github.event_name == 'push')) }}
         uses: actions/setup-python@v4
         with:
           python-version: "3.*"
       - name: Setup PHP
-        if: ${{ inputs.environment != false && (github.event.pull_request.merged == true || inputs.environment == 'production' || (inputs.environment == 'staging' && github.event_name == 'push')) }}
+        if: ${{ inputs.environment != false && (github.event.pull_request.merged != true || inputs.environment == 'production' || (inputs.environment == 'staging' && github.event_name == 'push')) }}
         uses: shivammathur/setup-php@2.21.1
         with:
           php-version: ${{ inputs.phpVersion }}
           tools: composer:v2
       - name: Get composer cache directory
-        if: ${{ inputs.environment != false && (github.event.pull_request.merged == true || inputs.environment == 'production' || (inputs.environment == 'staging' && github.event_name == 'push')) }}
+        if: ${{ inputs.environment != false && (github.event.pull_request.merged != true || inputs.environment == 'production' || (inputs.environment == 'staging' && github.event_name == 'push')) }}
         id: composer-cache
         run: echo "::set-output name=dir::$(composer config cache-files-dir)"
       - name: Cache Composer dependencies
-        if: ${{ inputs.environment != false && (github.event.pull_request.merged == true || inputs.environment == 'production' || (inputs.environment == 'staging' && github.event_name == 'push')) }}
+        if: ${{ inputs.environment != false && (github.event.pull_request.merged != true || inputs.environment == 'production' || (inputs.environment == 'staging' && github.event_name == 'push')) }}
         uses: actions/cache@v3
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
           key: ${{ runner.os }}-composer-no-dev-${{ hashFiles('**/composer.lock') }}
           restore-keys: ${{ runner.os }}-composer-no-dev-
       - name: Install Composer dependencies
-        if: ${{ inputs.environment != false && (github.event.pull_request.merged == true || inputs.environment == 'production' || (inputs.environment == 'staging' && github.event_name == 'push')) }}
+        if: ${{ inputs.environment != false && (github.event.pull_request.merged != true || inputs.environment == 'production' || (inputs.environment == 'staging' && github.event_name == 'push')) }}
         run: composer install ${{ inputs.buildArgs }}
-      - name: Pull develop branch of sdk --with-all-dependencies
+      - name: Pull develop branch of sdk 
         if: ${{ inputs.sdkRequired }}
-        run: composer require benchmarkeducation/sdk:dev-develop --with-all-dependencies
+        run: composer require benchmarkeducation/sdk:dev-develop 
       - name: Send Teams notification for failed build
         uses: skitionek/notify-microsoft-teams@master
         if: ${{ failure() && steps.build.conclusion == 'failure' }}
