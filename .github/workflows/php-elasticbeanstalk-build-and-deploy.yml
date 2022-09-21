@@ -70,7 +70,7 @@ jobs:
         run: composer install ${{ inputs.buildArgs }}
       - name: Pull develop branch of sdk --with-all-dependencies
         if: ${{ inputs.sdkRequired }}
-        run: composer require benchmarkeducation/sdk:dev-develop
+        run: composer require benchmarkeducation/sdk:dev-develop --with-all-dependencies
       - name: Send Teams notification for failed build
         uses: skitionek/notify-microsoft-teams@master
         if: ${{ failure() && steps.build.conclusion == 'failure' }}
