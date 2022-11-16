@@ -61,10 +61,10 @@ jobs:
             {
               "text": "FAILED: Deployment to ${{ inputs.environment }} for ${{ github.repository }} ${{ inputs.branch }} branch failed due to build failure. Build needs to be fixed."
             }
-      - name: Move jar file
+      - name: Create bundle.zip
         if: ${{ inputs.environment != false && (github.event.pull_request.merged == true || inputs.environment == 'production') }}
-        run: mv ${{ inputs.pathToJarFile }} ROOT.jar
-      - name: Deploy jar file to Elastic Beanstalk
+        run: zip -r bundle.zip ${{ inputs.pathToJarFile }} .ebextensions .platform Procfile
+      - name: Deploy to Elastic Beanstalk
         id: deploy1
         if: ${{ inputs.environment != false && (github.event.pull_request.merged == true || inputs.environment == 'production') }}
         run: |
