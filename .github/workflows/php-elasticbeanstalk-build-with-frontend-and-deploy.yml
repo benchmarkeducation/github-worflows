@@ -19,6 +19,9 @@ on:
       elasticBeanstalkApplication:
         required: true
         type: string
+      packageJsonPath:
+        required: true
+        type: string
 
 jobs:
   php-elasticbeanstalk-build-and-deploy:
