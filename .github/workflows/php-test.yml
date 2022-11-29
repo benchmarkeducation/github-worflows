@@ -48,6 +48,7 @@ jobs:
           key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
           restore-keys: ${{ runner.os }}-composer-
       - run: composer config --no-plugins allow-plugins.kylekatarnls/update-helper false
+      - run: composer config --no-plugins allow-plugins.symfony/thanks false
       - name: Install Composer dependencies
         run: composer install
       - name: Run test
