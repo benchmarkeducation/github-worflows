@@ -7,6 +7,11 @@ on:
         type: boolean
         default: false
         required: false
+      distributionKeyPrefix:
+        description: A prefix that will be prepended to the distribution key with an underscore
+        type: string
+        default: ""
+        required: false
     outputs:
       environment:
         description: The environment this deployment is for based on the target branch. Returns false if doesnt match
@@ -64,6 +69,10 @@ jobs:
             DISTRIBUTION_ID_KEY=CLOUDFRONT_DISTRIBUTION_ID_STAGING
           elif grep -q "release" <<< "${{ github.event_name }}" && grep -q "tags/v" <<< "${{ github.ref }}"; then
             DISTRIBUTION_ID_KEY=CLOUDFRONT_DISTRIBUTION_ID_PRODUCTION
+          fi
+          
+          if [ -n "${{ inputs.distributionKeyPrefix }}"] ; then
+            DISTRIBUTION_ID_KEY="${{ inputs.distributionKeyPrefix }}"_"$DISTRIBUTION_ID_KEY"
           fi
           
           echo $DISTRIBUTION_ID_KEY
