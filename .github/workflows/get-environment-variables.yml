@@ -71,7 +71,7 @@ jobs:
             DISTRIBUTION_ID_KEY=CLOUDFRONT_DISTRIBUTION_ID_PRODUCTION
           fi
           
-          if [ -z "${{ inputs.distributionKeyPrefix }}"] || [ "${{ inputs.distributionKeyPrefix }}" != '' ] ; then
+          if [ "${{ inputs.distributionKeyPrefix }}" != '' ] ; then
             DISTRIBUTION_ID_KEY="${{ inputs.distributionKeyPrefix }}"_"$DISTRIBUTION_ID_KEY"
           fi
           
