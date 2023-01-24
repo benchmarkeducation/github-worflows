@@ -10,7 +10,7 @@ on:
       distributionKeyPrefix:
         description: A prefix that will be prepended to the distribution key with an underscore
         type: string
-        default: ""
+        default: ''
         required: false
     outputs:
       environment:
@@ -71,7 +71,7 @@ jobs:
             DISTRIBUTION_ID_KEY=CLOUDFRONT_DISTRIBUTION_ID_PRODUCTION
           fi
           
-          if [ -n "${{ inputs.distributionKeyPrefix }}"] ; then
+          if [ "${{ inputs.distributionKeyPrefix }}" != '' ] ; then
             DISTRIBUTION_ID_KEY="${{ inputs.distributionKeyPrefix }}"_"$DISTRIBUTION_ID_KEY"
           fi
           
