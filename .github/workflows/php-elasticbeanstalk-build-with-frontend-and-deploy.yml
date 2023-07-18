@@ -87,7 +87,7 @@ jobs:
         if: ${{ inputs.environment != false && (github.event.pull_request.merged == true || inputs.environment == 'production' || (inputs.environment == 'staging' && github.event_name == 'push')) }}
         run: |
           echo "Installing Elastic Beanstalk Cli"
-          pip install awsebcli --upgrade
+          pip install awsebcli==3.19 --upgrade
 
           NOW=$(date +"%m%d%Y_%H%M")
           BRANCH_DETAIL="${{ inputs.branch }}"
