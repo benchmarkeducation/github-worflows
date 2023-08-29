@@ -34,9 +34,88 @@ on:
         required: false
         default: '16'
         type: string
-
+      hasDevelopmentEnvironment:
+        required: false
+        default: false
+        type: boolean
 
 jobs:
+  yarn-build-and-deploy-development:
+    if: inputs.hasDevelopmentEnvironment
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ inputs.workingDirectory }}
+    steps:
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: Check out repository code
+        uses: actions/checkout@v3
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          cache: 'yarn'
+          cache-dependency-path: ${{ inputs.packageJsonPath }}
+          node-version: ${{ inputs.nodeVersion }}
+      - uses: webfactory/ssh-agent@v0.4.1
+        with:
+          ssh-private-key: ${{ secrets.SCRATCH_USER_ACCESS_TOKEN }}
+      - name: Clean cache
+        run: yarn cache clean
+      - name: Install dependencies
+        run: yarn install --immutable
+      - if: ${{ inputs.environment == 'qa' && inputs.files != 'none' }}
+        name: Pull develop branch of required repositories
+        run: for f in ${{ inputs.files }}; do yarn add github:benchmarkeducation/$f#develop ; done
+      - name: Copy correct .env file
+        run: cp .env.development .env
+      - name: Build Application
+        id: build
+        run: yarn build
+      - name: Send Teams notification for failed build
+        uses: skitionek/notify-microsoft-teams@master
+        if: ${{ failure() && steps.build.conclusion == 'failure' }}
+        with:
+          webhook_url: ${{ secrets.MSTEAMS_WEBHOOK }}
+          raw: >-
+            {
+              "text": "FAILED: Deployment to development for ${{ github.repository }} ${{ inputs.branch }} branch failed due to build failure. Build needs to be fixed."
+            }
+      - name: Deploy Remote Entry with no caching headers
+        id: deploy1
+        if: ${{ inputs.environment != false && (github.event.pull_request.merged == true && inputs.environment == 'qa') }}
+        run: aws s3 sync ${{ inputs.directoryToDeploy }} s3://bu-static-sites/development/${{ inputs.directoryToDeployTo }} --delete --exact-timestamps --cache-control no-store,max-age=0 --exclude "*" --include "remoteEntry.js"
+      - name: Deploy rest of files
+        id: deploy2
+        if: ${{ inputs.environment != false && (github.event.pull_request.merged == true || inputs.environment == 'qa') }}
+        run: aws s3 sync ${{ inputs.directoryToDeploy }} s3://bu-static-sites/development/${{ inputs.directoryToDeployTo }} --delete --exact-timestamps --cache-control max-age=43200 --include "*" --exclude "remoteEntry.js"
+      - name: Invalidate Cloudfront cache
+        id: deploy3
+        if: ${{ inputs.environment != false && (github.event.pull_request.merged == true || inputs.environment == 'qa') }}
+        run: aws cloudfront create-invalidation --distribution-id "${{ secrets[CLOUDFRONT_DISTRIBUTION_ID_DEVELOPMENT] }}" --paths "/*"
+      - name: Send Teams notification for failed build
+        uses: skitionek/notify-microsoft-teams@master
+        if: ${{ failure() && inputs.environment != false && (github.event.pull_request.merged == true || inputs.environment == 'production' || (inputs.environment == 'staging' && github.event_name == 'push')) && (steps.deploy1.conclusion == 'failure' || steps.deploy2.conclusion == 'failure' || steps.deploy3.conclusion == 'failure') }}
+        with:
+          webhook_url: ${{ secrets.MSTEAMS_WEBHOOK }}
+          raw: >-
+            {
+              "text": "FAILED: Deployment to ${{ inputs.environment }} for ${{ github.repository }} ${{ inputs.branch }} branch failed during the deployment phase. See workflow for more information."
+            }
+      - name: Send Teams notification for successfull deployment
+        uses: skitionek/notify-microsoft-teams@master
+        if: ${{ success() && (github.event.pull_request.merged == true || inputs.environment == 'production' || (inputs.environment == 'staging' && github.event_name == 'push')) }}
+        with:
+          webhook_url: ${{ secrets.MSTEAMS_WEBHOOK }}
+          raw: >-
+            {
+              "text": "Deploying ${{ github.repository }} ${{ inputs.branch }} to ${{ inputs.environment }} has completed."
+            }
+
   yarn-build-and-deploy:
     runs-on: ubuntu-latest
     defaults:

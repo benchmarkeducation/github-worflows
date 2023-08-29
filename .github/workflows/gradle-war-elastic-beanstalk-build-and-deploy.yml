@@ -21,7 +21,10 @@ on:
         description: The path to the war file. The path should be from the working directory. By default it is the root of the repository.
         required: true
         type: string
-
+      hasDevelopmentEnvironment:
+        required: false
+        default: false
+        type: boolean
 jobs:
   gradle-build-and-deploy:
     runs-on: ubuntu-latest
@@ -64,6 +67,41 @@ jobs:
       - name: Move war file
         if: ${{ inputs.environment != false && (github.event.pull_request.merged == true || inputs.environment == 'production' || (inputs.environment == 'staging' && github.event_name == 'push')) }}
         run: mv ${{ inputs.pathToWarFile }} ROOT.war
+      - name: Deploy war file to Elastic Beanstalk (Development)
+        id: deployDevelopment
+        if: ${{ inputs.environment != false && (github.event.pull_request.merged == true && inputs.environment == 'qa' && inputs.hasDevelopmentEnvironment) }}
+        run: |
+          echo "Installing Elastic Beanstalk Cli"
+          pip install awsebcli==3.19 --upgrade
+
+          NOW=$(date +"%m%d%Y_%H%M")
+          BRANCH_DETAIL="${{ inputs.branch }}"
+          strarr=($(echo $BRANCH_DETAIL | tr "\/" "\n"))
+          COUNT=${#strarr[@]}
+          if [[ $COUNT -gt 1 ]]
+          then
+            BRANCH_DETAIL=${strarr[1]}
+          fi
+
+          eb deploy --timeout 20 ${{ inputs.elasticBeanstalkApplication }}-development -l $(printf "%s_%s" "$BRANCH_DETAIL" "$NOW")
+      - name: Send Teams notification for failed deployment
+        uses: skitionek/notify-microsoft-teams@master
+        if: ${{ failure() && inputs.environment != false && (github.event.pull_request.merged == true && inputs.environment == 'qa') && steps.deployDevelopment.conclusion == 'failure' && inputs.hasDevelopmentEnvironment }}
+        with:
+          webhook_url: ${{ secrets.MSTEAMS_WEBHOOK }}
+          raw: >-
+            {
+              "text": "FAILED: Deployment to development for ${{ github.repository }} ${{ inputs.branch }} branch failed during the deployment phase. See workflow for more information"
+            }
+      - name: Send Teams notification for successful deployment
+        uses: skitionek/notify-microsoft-teams@master
+        if: ${{ success() && inputs.environment != false && (github.event.pull_request.merged == true && inputs.environment == 'qa' && inputs.hasDevelopmentEnvironment) }}
+        with:
+          webhook_url: ${{ secrets.MSTEAMS_WEBHOOK }}
+          raw: >-
+            {
+              "text": "Deploying ${{ github.repository }} ${{ inputs.branch }} to development has completed"
+            }
       - name: Deploy war file to Elastic Beanstalk
         id: deploy1
         if: ${{ inputs.environment != false && (github.event.pull_request.merged == true || inputs.environment == 'production' || (inputs.environment == 'staging' && github.event_name == 'push')) }}
