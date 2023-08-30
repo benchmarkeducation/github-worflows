@@ -96,7 +96,7 @@ jobs:
       - name: Invalidate Cloudfront cache
         id: deploy3
         if: ${{ inputs.environment != false && (github.event.pull_request.merged == true || inputs.environment == 'qa') }}
-        run: aws cloudfront create-invalidation --distribution-id "${{ secrets[CLOUDFRONT_DISTRIBUTION_ID_DEVELOPMENT] }}" --paths "/*"
+        run: aws cloudfront create-invalidation --distribution-id "${{ secrets.CLOUDFRONT_DISTRIBUTION_ID_DEVELOPMENT }}" --paths "/*"
       - name: Send Teams notification for failed build
         uses: skitionek/notify-microsoft-teams@master
         if: ${{ failure() && inputs.environment != false && (github.event.pull_request.merged == true || inputs.environment == 'production' || (inputs.environment == 'staging' && github.event_name == 'push')) && (steps.deploy1.conclusion == 'failure' || steps.deploy2.conclusion == 'failure' || steps.deploy3.conclusion == 'failure') }}
