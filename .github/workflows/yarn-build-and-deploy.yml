@@ -75,7 +75,9 @@ jobs:
         run: cp .env.development .env
       - name: Build Application
         id: build
-        run: yarn build
+        run: |
+             unset CI
+             yarn build
       - name: Send Teams notification for failed build
         uses: skitionek/notify-microsoft-teams@master
         if: ${{ failure() && steps.build.conclusion == 'failure' }}
