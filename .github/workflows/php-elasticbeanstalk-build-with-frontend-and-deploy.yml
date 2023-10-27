@@ -45,7 +45,7 @@ jobs:
         if: ${{ inputs.environment != false && (github.event.pull_request.merged == true || inputs.environment == 'production' || (inputs.environment == 'staging' && github.event_name == 'push')) }}
         uses: actions/setup-python@v4
         with:
-          python-version: "3.*"
+          python-version: "3.11"
       - name: Setup PHP
         if: ${{ inputs.environment != false && (github.event.pull_request.merged == true || inputs.environment == 'production' || (inputs.environment == 'staging' && github.event_name == 'push')) }}
         uses: shivammathur/setup-php@2.21.1
