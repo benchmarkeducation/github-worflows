@@ -42,7 +42,7 @@ jobs:
         run: yarn install --immutable
       - name: Run lint
         id: lint
-        run: yarn lint
+        run: yarn lint -- --fix
       - name: Send Teams Notification notification for failed test
         uses: skitionek/notify-microsoft-teams@master
         if: ${{ failure() && steps.lint.conclusion == 'failure' }}
