@@ -72,7 +72,9 @@ jobs:
         name: Pull develop branch of required repositories
         run: for f in ${{ inputs.files }}; do yarn add github:benchmarkeducation/$f#develop ; done
       - name: Copy correct .env file
-        run: cp .env.development .env
+        run: |
+          cp .env.development .env
+          sed --in-place='' "s#%%urlinfix%%#-development#g" .env
       - name: Build Application
         id: build
         run: yarn build
