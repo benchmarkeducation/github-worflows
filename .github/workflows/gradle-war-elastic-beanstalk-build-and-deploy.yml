@@ -83,7 +83,7 @@ jobs:
             BRANCH_DETAIL=${strarr[1]}
           fi
 
-          eb deploy --timeout 20 ${{ inputs.elasticBeanstalkApplication }}-development -l $(printf "%s_%s" "$BRANCH_DETAIL" "$NOW")
+          eb deploy --timeout 30 ${{ inputs.elasticBeanstalkApplication }}-development -l $(printf "%s_%s" "$BRANCH_DETAIL" "$NOW")
       - name: Send Teams notification for failed deployment
         uses: skitionek/notify-microsoft-teams@master
         if: ${{ failure() && inputs.environment != false && (github.event.pull_request.merged == true && inputs.environment == 'qa') && steps.deployDevelopment.conclusion == 'failure' && inputs.hasDevelopmentEnvironment }}
@@ -118,7 +118,7 @@ jobs:
             BRANCH_DETAIL=${strarr[1]}
           fi
 
-          eb deploy --timeout 20 ${{ inputs.elasticBeanstalkApplication }}-${{ inputs.environment }} -l $(printf "%s_%s" "$BRANCH_DETAIL" "$NOW")
+          eb deploy --timeout 30 ${{ inputs.elasticBeanstalkApplication }}-${{ inputs.environment }} -l $(printf "%s_%s" "$BRANCH_DETAIL" "$NOW")
       - name: Send Teams notification for failed deployment
         uses: skitionek/notify-microsoft-teams@master
         if: ${{ failure() && inputs.environment != false && (github.event.pull_request.merged == true || inputs.environment == 'production' || (inputs.environment == 'staging' && github.event_name == 'push')) && steps.deploy1.conclusion == 'failure' }}
