@@ -77,10 +77,6 @@ jobs:
       - name: Run test
         id: test
         run: yarn test  ${{ inputs.testConditions }}
-      - name: Upload coverage
-        run: |
-          export CODACY_PROJECT_TOKEN=${{ secrets.CODACY_PROJECT_TOKEN }}
-          bash <(curl -Ls https://coverage.codacy.com/get.sh)
       - name: Send Teams Notification notification for failed test
         uses: skitionek/notify-microsoft-teams@master
         if: ${{ failure() && steps.test.conclusion == 'failure' }}
