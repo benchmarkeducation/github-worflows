@@ -33,6 +33,11 @@ jobs:
         uses: gradle/gradle-build-action@v2
       - name: Run Test
         run: ./gradlew test
+      - name: Upload coverage
+        continue-on-error: true
+        run: |
+          export CODACY_PROJECT_TOKEN=${{ secrets.CODACY_PROJECT_TOKEN }}
+          bash <(curl -Ls https://coverage.codacy.com/get.sh)
       - name: Send Teams notification for failed test
         uses: skitionek/notify-microsoft-teams@master
         if: ${{ failure() }}
