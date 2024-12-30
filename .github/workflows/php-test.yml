@@ -51,6 +51,9 @@ jobs:
       - run: composer config --no-plugins allow-plugins.symfony/thanks false
       - name: Install Composer dependencies
         run: composer install
+      - run: |
+          cp .env.example .env
+          php artisan key:generate
       - name: Run test
         id: test
         run: ./vendor/bin/phpunit -c phpunit.xml --coverage-html ${{ inputs.coverageDirectories }}
