@@ -53,8 +53,8 @@ jobs:
           echo $ENVIRONMENT
           echo $BRANCH
 
-          echo "::set-output name=value::$ENVIRONMENT"
-          echo "::set-output name=value2::$BRANCH"
+          echo "value=$ENVIRONMENT" >> $GITHUB_OUTPUT
+          echo "value2=$BRANCH" >> $GITHUB_OUTPUT
       - name: Determine Cloudfront Distribution ID Key
         id: cloudfront-distribution-id-key
         if: ${{ inputs.generateDistributionKey }}
@@ -77,4 +77,4 @@ jobs:
           
           echo $DISTRIBUTION_ID_KEY
   
-          echo "::set-output name=value::$DISTRIBUTION_ID_KEY"
+          echo "value=$DISTRIBUTION_ID_KEY" >> $GITHUB_OUTPUT
