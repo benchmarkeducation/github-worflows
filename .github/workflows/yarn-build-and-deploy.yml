@@ -93,11 +93,11 @@ jobs:
         run: aws s3 sync ${{ inputs.directoryToDeploy }} s3://bu-static-sites/development/${{ inputs.directoryToDeployTo }} --delete --exact-timestamps --cache-control no-store,max-age=0 --exclude "*" --include "remoteEntry.js"
       - name: Deploy rest of files
         id: deploy2
-        if: ${{ inputs.environment != false && (github.event.pull_request.merged == true || inputs.environment == 'qa') }}
+        if: ${{ inputs.environment != false && (github.event.pull_request.merged == true && inputs.environment == 'qa') }}
         run: aws s3 sync ${{ inputs.directoryToDeploy }} s3://bu-static-sites/development/${{ inputs.directoryToDeployTo }} --delete --exact-timestamps --cache-control max-age=43200 --include "*" --exclude "remoteEntry.js"
       - name: Invalidate Cloudfront cache
         id: deploy3
-        if: ${{ inputs.environment != false && (github.event.pull_request.merged == true || inputs.environment == 'qa') }}
+        if: ${{ inputs.environment != false && (github.event.pull_request.merged == true && inputs.environment == 'qa') }}
         run: aws cloudfront create-invalidation --distribution-id "${{ secrets.CLOUDFRONT_DISTRIBUTION_ID_DEVELOPMENT }}" --paths "/*"
       - name: Send Teams notification for failed build
         uses: skitionek/notify-microsoft-teams@master
@@ -192,3 +192,4 @@ jobs:
             {
               "text": "Deploying ${{ github.repository }} ${{ inputs.branch }} to ${{ inputs.environment }} has completed."
             }
+
