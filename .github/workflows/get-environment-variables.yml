@@ -40,26 +40,21 @@ jobs:
           if grep -q "pull_request" <<< "${{ github.event_name }}" && grep -q "develop" <<< "${{ github.base_ref }}"; then
             ENVIRONMENT=qa
             BRANCH="${{ github.base_ref }}"
-            MSTEAMS_WEBHOOK="${{ secrets.MSTEAMS_QA_WEBHOOK }}"
           elif grep -q "pull_request" <<< "${{ github.event_name }}" && grep -q "release/" <<< "${{ github.base_ref }}"; then
             ENVIRONMENT=staging
             BRANCH="${{ github.base_ref }}"
-            MSTEAMS_WEBHOOK="${{ secrets.MSTEAMS_STAGING_WEBHOOK }}"
           elif grep -q "push" <<< "${{ github.event_name }}" && grep -q "release/" <<< "${{ github.ref }}"; then
             ENVIRONMENT=staging
             BRANCH=($(echo "${{ github.ref }}" | cut -c 12-))
-            MSTEAMS_WEBHOOK="${{ secrets.MSTEAMS_STAGING_WEBHOOK }}"
           elif grep -q "release" <<< "${{ github.event_name }}" && grep -q "tags/v" <<< "${{ github.ref }}"; then
             ENVIRONMENT=production
             BRANCH=($(echo "${{ github.ref }}" | cut -c 11-))
-            MSTEAMS_WEBHOOK="${{ secrets.MSTEAMS_PRODUCTION_WEBHOOK }}"
           fi
           echo $ENVIRONMENT
           echo $BRANCH
 
           echo "::set-output name=value::$ENVIRONMENT"
           echo "::set-output name=value2::$BRANCH"
-          echo "::set-output name=value3::$MSTEAMS_WEBHOOK"
       - name: Determine Cloudfront Distribution ID Key
         id: cloudfront-distribution-id-key
         if: ${{ inputs.generateDistributionKey }}
