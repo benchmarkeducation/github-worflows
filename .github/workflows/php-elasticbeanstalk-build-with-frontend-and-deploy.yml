@@ -27,9 +27,10 @@ on:
         default: false
         type: boolean
       microsoftTeamWebhook:
-        required: true
+        required: false
+        default: ${{ secrets.MSTEAMS_WEBHOOK }}
         type: string
-        
+
 jobs:
   php-elasticbeanstalk-build-and-deploy:
     runs-on: ubuntu-latest

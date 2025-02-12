@@ -18,7 +18,8 @@ on:
         required: true
         type: string
       microsoftTeamWebhook:
-        required: true
+        required: false
+        default: ${{ secrets.MSTEAMS_WEBHOOK }}
         type: string
 
 jobs:
