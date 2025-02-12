@@ -41,6 +41,10 @@ on:
         required: false
         default: false
         type: boolean 
+      microsoftTeamWebhook:
+        required: false
+        default: ${{ secrets.MSTEAMS_WEBHOOK }}
+        type: string
 
 jobs:
   yarn-test:
@@ -86,7 +90,7 @@ jobs:
         uses: skitionek/notify-microsoft-teams@master
         if: ${{ failure() && steps.test.conclusion == 'failure' }}
         with:
-          webhook_url: ${{ secrets.MSTEAMS_WEBHOOK }}
+          webhook_url: ${{ inputs.microsoftTeamWebhook }}
           raw: >-
             {
               "text": "FAILED: Deployment to ${{ inputs.environment }} for ${{ github.repository }} ${{ inputs.branch }} branch failed due to broken test. Test need to be fixed."

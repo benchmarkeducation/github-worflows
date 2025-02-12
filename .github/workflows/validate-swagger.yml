@@ -17,6 +17,10 @@ on:
       environment:
         required: true
         type: string
+      microsoftTeamWebhook:
+        required: false
+        default: ${{ secrets.MSTEAMS_WEBHOOK }}
+        type: string
 
 jobs:
   validate-swagger:
@@ -40,7 +44,7 @@ jobs:
         uses: skitionek/notify-microsoft-teams@master
         if: ${{ failure() && steps.test.conclusion == 'failure' }}
         with:
-          webhook_url: ${{ secrets.MSTEAMS_WEBHOOK }}
+          webhook_url: ${{ inputs.microsoftTeamWebhook }}
           raw: >-
             {
               "text": "FAILED: Deployment to ${{ inputs.environment }} for ${{ github.repository }} ${{ inputs.branch }} branch failed due to broken swagger file."
