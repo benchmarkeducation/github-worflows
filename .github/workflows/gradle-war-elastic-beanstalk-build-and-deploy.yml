@@ -25,6 +25,10 @@ on:
         required: false
         default: false
         type: boolean
+      microsoftTeamWebhook:
+        required: true
+        type: string
+        
 jobs:
   gradle-build-and-deploy:
     runs-on: ubuntu-latest
@@ -59,7 +63,7 @@ jobs:
         uses: skitionek/notify-microsoft-teams@master
         if: ${{ failure() && steps.build.conclusion == 'failure' }}
         with:
-          webhook_url: ${{ secrets.MSTEAMS_WEBHOOK }}
+          webhook_url: ${{ inputs.microsoftTeamWebhook }}
           raw: >-
             {
               "text": "FAILED: Deployment to ${{ inputs.environment }} for ${{ github.repository }} ${{ inputs.branch }} branch failed due to build failure. Build needs to be fixed."
@@ -88,7 +92,7 @@ jobs:
         uses: skitionek/notify-microsoft-teams@master
         if: ${{ failure() && inputs.environment != false && (github.event.pull_request.merged == true && inputs.environment == 'qa') && steps.deployDevelopment.conclusion == 'failure' && inputs.hasDevelopmentEnvironment }}
         with:
-          webhook_url: ${{ secrets.MSTEAMS_WEBHOOK }}
+          webhook_url: ${{ inputs.microsoftTeamWebhook }}
           raw: >-
             {
               "text": "FAILED: Deployment to development for ${{ github.repository }} ${{ inputs.branch }} branch failed during the deployment phase. See workflow for more information"
@@ -97,7 +101,7 @@ jobs:
         uses: skitionek/notify-microsoft-teams@master
         if: ${{ success() && inputs.environment != false && (github.event.pull_request.merged == true && inputs.environment == 'qa' && inputs.hasDevelopmentEnvironment) }}
         with:
-          webhook_url: ${{ secrets.MSTEAMS_WEBHOOK }}
+          webhook_url: ${{ inputs.microsoftTeamWebhook }}
           raw: >-
             {
               "text": "Deploying ${{ github.repository }} ${{ inputs.branch }} to development has completed"
@@ -123,7 +127,7 @@ jobs:
         uses: skitionek/notify-microsoft-teams@master
         if: ${{ failure() && inputs.environment != false && (github.event.pull_request.merged == true || inputs.environment == 'production' || (inputs.environment == 'staging' && github.event_name == 'push')) && steps.deploy1.conclusion == 'failure' }}
         with:
-          webhook_url: ${{ secrets.MSTEAMS_WEBHOOK }}
+          webhook_url: ${{ inputs.microsoftTeamWebhook }}
           raw: >-
             {
               "text": "FAILED: Deployment to ${{ inputs.environment }} for ${{ github.repository }} ${{ inputs.branch }} branch failed during the deployment phase. See workflow for more information"
@@ -132,7 +136,7 @@ jobs:
         uses: skitionek/notify-microsoft-teams@master
         if: ${{ success() && inputs.environment != false && (github.event.pull_request.merged == true || inputs.environment == 'production' || (inputs.environment == 'staging' && github.event_name == 'push')) }}
         with:
-          webhook_url: ${{ secrets.MSTEAMS_WEBHOOK }}
+          webhook_url: ${{ inputs.microsoftTeamWebhook }}
           raw: >-
             {
               "text": "Deploying ${{ github.repository }} ${{ inputs.branch }} to ${{ inputs.environment }} has completed"
